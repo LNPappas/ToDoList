@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback, Keyboard, View, FlatList, Animated, TextInput } from 'react-native';
 import Header from './components/header';
 import TodoItem from './components/todoitem'; 
 import AddTodo from './components/addtodo';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function App() {
   const [todos, setTodos] = useState([
@@ -16,31 +17,35 @@ export default function App() {
   }
 
   const submitHandler = (text) => {
-    setTodos((prevTodos) => {
-      return [
-        { text: text, key: Math.random.toString() },
-        ...prevTodos
-      ];
-    })
-
+    if(text.length > 0){
+      setTodos((prevTodos) => {
+        return [
+          { text: text, key: uuidv4() },
+          ...prevTodos
+        ];
+      });
+    } 
   }
 
   return (
-    <View style={styles.container}>
-      <Header />
-      <View style={styles.content}>
-        <AddTodo submitHandler={submitHandler} />
-        <View style={styles.list}>
-          <FlatList
-            data={todos}
-            renderItem={({ item }) => (
-              <TodoItem item={item} pressHandler={pressHandler} />
-              )}
-          />
+      <TouchableWithoutFeedback onPress={() => {
+        Keyboard.dismiss();
+      }}>
+        <View style={styles.container}>
+          <Header />
+          <View style={styles.content}>
+            <AddTodo submitHandler={submitHandler} />
+            <View style={styles.list}>
+              <FlatList
+                data={todos}
+                renderItem={({ item }) => (
+                  <TodoItem item={item} pressHandler={pressHandler} />
+                  )}
+              />
+            </View>
+          </View>
         </View>
-      </View>
-
-    </View>
+      </TouchableWithoutFeedback>
   );
 }
 
@@ -50,9 +55,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   content: {
+    flex: 1, 
     padding: 40,
   },
   list: {
+    flex: 1, 
     marginTop: 20,
   }, 
 });
